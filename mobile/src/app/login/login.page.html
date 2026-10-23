@@ -1,0 +1,39 @@
+<ion-content class="ion-padding">
+  <main class="auth-conteudo">
+    <h1>Assistente Diário</h1>
+    <h2>Entrar</h2>
+
+    <form [formGroup]="form" (ngSubmit)="entrar()" novalidate>
+      <ion-input
+        label="E-mail"
+        labelPlacement="floating"
+        fill="outline"
+        type="email"
+        inputmode="email"
+        autocomplete="username"
+        formControlName="email"
+        errorText="Informe um e-mail válido."
+      ></ion-input>
+
+      <ion-input
+        label="Senha"
+        labelPlacement="floating"
+        fill="outline"
+        type="password"
+        autocomplete="current-password"
+        formControlName="senha"
+        errorText="Informe a senha."
+      ></ion-input>
+
+      @if (erro()) {
+        <ion-text color="danger"><p role="alert">{{ erro() }}</p></ion-text>
+      }
+
+      <ion-button expand="block" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Entrando…' : 'Entrar' }}
+      </ion-button>
+    </form>
+
+    <p class="rodape">Ainda não tem conta? <a routerLink="/registrar">Criar conta</a></p>
+  </main>
+</ion-content>

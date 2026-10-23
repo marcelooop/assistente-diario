@@ -1,0 +1,48 @@
+<section class="secao">
+  <h2>Alterar senha</h2>
+
+  <form [formGroup]="form" (ngSubmit)="trocar()" novalidate>
+    <ion-input
+      label="Senha atual"
+      labelPlacement="floating"
+      fill="outline"
+      type="password"
+      autocomplete="current-password"
+      formControlName="senhaAtual"
+      errorText="Informe a senha atual."
+    ></ion-input>
+
+    <ion-input
+      label="Nova senha (mínimo 8 caracteres)"
+      labelPlacement="floating"
+      fill="outline"
+      type="password"
+      autocomplete="new-password"
+      formControlName="novaSenha"
+      errorText="A senha deve ter de 8 a 72 caracteres."
+    ></ion-input>
+
+    <ion-input
+      label="Confirmar nova senha"
+      labelPlacement="floating"
+      fill="outline"
+      type="password"
+      autocomplete="new-password"
+      formControlName="confirmacao"
+    ></ion-input>
+    @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {
+      <ion-text color="danger"><small>As senhas não coincidem.</small></ion-text>
+    }
+
+    @if (erro()) {
+      <ion-text color="danger"><p role="alert">{{ erro() }}</p></ion-text>
+    }
+    @if (sucesso()) {
+      <ion-text color="success"><p role="status">Senha alterada com sucesso.</p></ion-text>
+    }
+
+    <ion-button expand="block" type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Alterando…' : 'Alterar senha' }}
+    </ion-button>
+  </form>
+</section>

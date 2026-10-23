@@ -67,10 +67,14 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(new ImmutableSecret<>(jwtSecretKey));
     }
 
-    /** Origens permitidas (web Angular e Ionic em desenvolvimento). Sobrescreva com APP_CORS_ORIGENS. */
+    /**
+     * Origens permitidas: web Angular (4200), Ionic no navegador (8100) e o WebView do Capacitor
+     * (http://localhost no Android, capacitor://localhost no iOS). Sobrescreva com APP_CORS_ORIGENS.
+     */
     @Bean
     CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.cors.origens:http://localhost:4200,http://localhost:8100}") List<String> origens) {
+            @Value("${app.cors.origens:http://localhost:4200,http://localhost:8100,http://localhost,capacitor://localhost}")
+            List<String> origens) {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(origens);
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

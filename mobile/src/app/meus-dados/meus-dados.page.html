@@ -1,0 +1,136 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ existente() ? 'Meus dados' : 'Complete seu cadastro' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="pagina">
+    @if (!existente() && !carregando()) {
+      <p>Confira seus dados e informe suas medidas para começar a usar o aplicativo.</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
+      <section class="secao">
+        <h2>Cadastro</h2>
+
+        <ion-input
+          label="Nome"
+          labelPlacement="floating"
+          fill="outline"
+          autocomplete="name"
+          maxlength="120"
+          formControlName="nome"
+          errorText="Informe seu nome."
+        ></ion-input>
+
+        <ion-input
+          label="Nome de usuário"
+          labelPlacement="floating"
+          fill="outline"
+          autocomplete="nickname"
+          maxlength="30"
+          formControlName="nomeUsuario"
+          helperText='É o nome que aparece em "Olá, ..." no menu.'
+          errorText="De 3 a 30 caracteres: letras, números, ponto, hífen ou sublinhado."
+        ></ion-input>
+
+        <ion-input
+          label="E-mail"
+          labelPlacement="floating"
+          fill="outline"
+          type="email"
+          inputmode="email"
+          autocomplete="username"
+          formControlName="email"
+          errorText="Informe um e-mail válido."
+        ></ion-input>
+      </section>
+
+      <section class="secao">
+        <h2>Medidas</h2>
+
+        <ion-input
+          label="Altura (m)"
+          labelPlacement="floating"
+          fill="outline"
+          type="number"
+          inputmode="decimal"
+          placeholder="1.75"
+          formControlName="altura"
+          errorText="Entre 0,50 e 2,50 m."
+        ></ion-input>
+
+        <ion-input
+          label="Peso (kg)"
+          labelPlacement="floating"
+          fill="outline"
+          type="number"
+          inputmode="decimal"
+          formControlName="peso"
+          errorText="Informe o peso."
+        ></ion-input>
+
+        <ion-input
+          label="Meta de peso (kg)"
+          labelPlacement="floating"
+          fill="outline"
+          type="number"
+          inputmode="decimal"
+          formControlName="metaPeso"
+          errorText="Informe a meta."
+        ></ion-input>
+
+        <div class="imc" aria-live="polite">
+          <span>IMC (calculado)</span>
+          @if (imc() !== null) {
+            <strong>{{ imc() }}</strong>
+            <em>{{ classificacao() }}</em>
+          } @else {
+            <strong>—</strong>
+            <em>Informe altura e peso</em>
+          }
+        </div>
+      </section>
+
+      <section class="secao">
+        <h2>Composição corporal (opcional)</h2>
+
+        <ion-input
+          label="Massa magra (kg)"
+          labelPlacement="floating"
+          fill="outline"
+          type="number"
+          inputmode="decimal"
+          formControlName="massaMagra"
+          errorText="Valor inválido."
+        ></ion-input>
+
+        <ion-input
+          label="Massa gorda (kg)"
+          labelPlacement="floating"
+          fill="outline"
+          type="number"
+          inputmode="decimal"
+          formControlName="massaGorda"
+          errorText="Valor inválido."
+        ></ion-input>
+      </section>
+
+      @if (erro()) {
+        <ion-text color="danger"><p role="alert">{{ erro() }}</p></ion-text>
+      }
+
+      <ion-button expand="block" type="submit" [disabled]="salvando() || carregando()">
+        {{ salvando() ? 'Salvando…' : 'Salvar' }}
+      </ion-button>
+    </form>
+
+    @if (existente()) {
+      <app-troca-senha />
+    }
+  </div>
+</ion-content>

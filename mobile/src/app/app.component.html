@@ -1,0 +1,29 @@
+<ion-app>
+  @if (auth.logado()) {
+    <ion-menu contentId="conteudo-principal">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title class="saudacao">Olá, {{ saudacao() }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list lines="none">
+          <ion-menu-toggle [autoHide]="false">
+            <ion-item button routerLink="/visao-geral" routerDirection="root">
+              <ion-label>Visão geral</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-menu-toggle [autoHide]="false">
+            <ion-item button routerLink="/meus-dados" routerDirection="root">
+              <ion-label>Meus dados</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          <ion-item button class="sair" (click)="sair()">
+            <ion-label color="danger">Sair</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
+  }
+  <ion-router-outlet id="conteudo-principal"></ion-router-outlet>
+</ion-app>

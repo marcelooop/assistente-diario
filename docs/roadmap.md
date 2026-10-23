@@ -9,5 +9,7 @@
 - [ ] Mobile: projeto Ionic
 - [x] Autenticação (e-mail e senha, JWT) com login, registro e página inicial em branco
 - [ ] Recuperação de senha / confirmação de e-mail
-- [ ] Mobile (Ionic): telas de login e cadastro
+- [x] Mobile (Ionic): login, criar conta, visão geral, Meus dados e menu lateral
+- [ ] Gerar app nativo (Android/iOS) com Capacitor
+- [ ] Compartilhar código comum entre web e mobile
 - [ ] Primeira funcionalidade ponta a ponta

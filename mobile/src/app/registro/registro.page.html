@@ -1,0 +1,72 @@
+<ion-content class="ion-padding">
+  <main class="auth-conteudo">
+    <h1>Assistente Diário</h1>
+    <h2>Criar conta</h2>
+
+    <form [formGroup]="form" (ngSubmit)="criar()" novalidate>
+      <ion-input
+        label="Nome"
+        labelPlacement="floating"
+        fill="outline"
+        autocomplete="name"
+        maxlength="120"
+        formControlName="nome"
+        errorText="Informe seu nome."
+      ></ion-input>
+
+      <ion-input
+        label="Nome de usuário"
+        labelPlacement="floating"
+        fill="outline"
+        autocomplete="nickname"
+        maxlength="30"
+        formControlName="nomeUsuario"
+        helperText='É o nome que aparece em "Olá, ..." no menu.'
+        errorText="De 3 a 30 caracteres: letras, números, ponto, hífen ou sublinhado."
+      ></ion-input>
+
+      <ion-input
+        label="E-mail"
+        labelPlacement="floating"
+        fill="outline"
+        type="email"
+        inputmode="email"
+        autocomplete="username"
+        formControlName="email"
+        errorText="Informe um e-mail válido."
+      ></ion-input>
+
+      <ion-input
+        label="Senha (mínimo 8 caracteres)"
+        labelPlacement="floating"
+        fill="outline"
+        type="password"
+        autocomplete="new-password"
+        formControlName="senha"
+        errorText="A senha deve ter de 8 a 72 caracteres."
+      ></ion-input>
+
+      <ion-input
+        label="Confirmar senha"
+        labelPlacement="floating"
+        fill="outline"
+        type="password"
+        autocomplete="new-password"
+        formControlName="confirmacao"
+      ></ion-input>
+      @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {
+        <ion-text color="danger"><small>As senhas não coincidem.</small></ion-text>
+      }
+
+      @if (erro()) {
+        <ion-text color="danger"><p role="alert">{{ erro() }}</p></ion-text>
+      }
+
+      <ion-button expand="block" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Criando…' : 'Criar conta' }}
+      </ion-button>
+    </form>
+
+    <p class="rodape">Já tem conta? <a routerLink="/login">Entrar</a></p>
+  </main>
+</ion-content>
