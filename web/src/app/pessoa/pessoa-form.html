@@ -1,46 +1,69 @@
 <section class="cartao">
   <h1>{{ existente() ? 'Meus dados' : 'Complete seu cadastro' }}</h1>
   @if (!existente() && !carregando()) {
-    <p>Informe seus dados para começar a usar o aplicativo.</p>
+    <p>Confira seus dados e informe suas medidas para começar a usar o aplicativo.</p>
   }
 
   <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
-    <label>
-      Nome
-      <input type="text" formControlName="nome" maxlength="120" />
-      @if (invalido('nome')) { <small class="erro">Informe o nome.</small> }
-    </label>
+    <fieldset>
+      <legend>Cadastro</legend>
 
-    <div class="linha">
       <label>
-        Altura (m)
-        <input type="number" formControlName="altura" step="0.01" placeholder="1.75" />
-        @if (invalido('altura')) { <small class="erro">Entre 0,50 e 2,50 m.</small> }
+        Nome
+        <input type="text" formControlName="nome" autocomplete="name" maxlength="120" />
+        @if (invalido('nome')) { <small class="erro">Informe seu nome.</small> }
       </label>
 
       <label>
-        Peso (kg)
-        <input type="number" formControlName="peso" step="0.1" />
-        @if (invalido('peso')) { <small class="erro">Informe o peso.</small> }
+        Nome de usuário
+        <small class="dica">É o nome que aparece em "Olá, ..." no menu.</small>
+        <input type="text" formControlName="nomeUsuario" autocomplete="nickname" maxlength="30" />
+        @if (invalido('nomeUsuario')) {
+          <small class="erro">De 3 a 30 caracteres: letras, números, ponto, hífen ou sublinhado.</small>
+        }
       </label>
 
       <label>
-        Meta de peso (kg)
-        <input type="number" formControlName="metaPeso" step="0.1" />
-        @if (invalido('metaPeso')) { <small class="erro">Informe a meta.</small> }
+        E-mail
+        <input type="email" formControlName="email" autocomplete="username" />
+        @if (invalido('email')) { <small class="erro">Informe um e-mail válido.</small> }
       </label>
-    </div>
+    </fieldset>
 
-    <div class="imc" aria-live="polite">
-      <span>IMC (calculado)</span>
-      @if (imc() !== null) {
-        <strong>{{ imc() }}</strong>
-        <em>{{ classificacao() }}</em>
-      } @else {
-        <strong>—</strong>
-        <em>Informe altura e peso</em>
-      }
-    </div>
+    <fieldset>
+      <legend>Medidas</legend>
+
+      <div class="linha">
+        <label>
+          Altura (m)
+          <input type="number" formControlName="altura" step="0.01" placeholder="1.75" />
+          @if (invalido('altura')) { <small class="erro">Entre 0,50 e 2,50 m.</small> }
+        </label>
+
+        <label>
+          Peso (kg)
+          <input type="number" formControlName="peso" step="0.1" />
+          @if (invalido('peso')) { <small class="erro">Informe o peso.</small> }
+        </label>
+
+        <label>
+          Meta de peso (kg)
+          <input type="number" formControlName="metaPeso" step="0.1" />
+          @if (invalido('metaPeso')) { <small class="erro">Informe a meta.</small> }
+        </label>
+      </div>
+
+      <div class="imc" aria-live="polite">
+        <span>IMC (calculado)</span>
+        @if (imc() !== null) {
+          <strong>{{ imc() }}</strong>
+          <em>{{ classificacao() }}</em>
+        } @else {
+          <strong>—</strong>
+          <em>Informe altura e peso</em>
+        }
+      </div>
+    </fieldset>
 
     <fieldset>
       <legend>Composição corporal (opcional)</legend>

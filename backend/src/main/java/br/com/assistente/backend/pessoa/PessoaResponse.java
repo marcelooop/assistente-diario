@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 public record PessoaResponse(
         Long id,
-        String nome,
         BigDecimal altura,
         BigDecimal peso,
         BigDecimal metaPeso,
@@ -14,7 +13,7 @@ public record PessoaResponse(
         BigDecimal massaGorda) {
 
     static PessoaResponse de(Pessoa p) {
-        return new PessoaResponse(p.getId(), p.getNome(), p.getAltura(), p.getPeso(), p.getMetaPeso(),
+        return new PessoaResponse(p.getId(), p.getAltura(), p.getPeso(), p.getMetaPeso(),
                 p.getImc(), ImcCalculator.classificar(p.getImc()), p.getMassaMagra(), p.getMassaGorda());
     }
 }

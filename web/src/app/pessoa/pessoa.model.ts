@@ -1,6 +1,5 @@
-/** Dados enviados ao cadastrar/editar. O IMC não é enviado: o servidor calcula. */
+/** Dados corporais. O nome fica na conta. O IMC não é enviado: o servidor calcula. */
 export interface PessoaRequest {
-  nome: string;
   altura: number;
   peso: number;
   metaPeso: number;

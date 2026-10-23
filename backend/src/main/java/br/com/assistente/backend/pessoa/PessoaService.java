@@ -39,7 +39,6 @@ public class PessoaService {
     }
 
     private Pessoa preencher(Pessoa p, PessoaRequest req) {
-        p.setNome(req.nome().trim());
         p.setAltura(req.altura());
         p.setPeso(req.peso());
         p.setMetaPeso(req.metaPeso());

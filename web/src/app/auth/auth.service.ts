@@ -61,15 +61,20 @@ export class AuthService {
     return r.perfilCompleto ? '/visao-geral' : '/perfil';
   }
 
+  /** Atualiza os dados exibidos (ex.: "Olá, ...") depois que o usuário edita a conta. */
+  definirConta(c: { nome: string; nomeUsuario: string; email: string }): void {
+    this.nome.set(c.nome);
+    this.nomeUsuario.set(c.nomeUsuario);
+    this.email.set(c.email);
+    gravar(CHAVE_NOME, c.nome);
+    gravar(CHAVE_USUARIO, c.nomeUsuario);
+    gravar(CHAVE_EMAIL, c.email);
+  }
+
   private guardar(r: AuthResponse): void {
     this.token.set(r.token);
-    this.email.set(r.email);
-    this.nomeUsuario.set(r.nomeUsuario);
-    this.nome.set(r.nome);
-    gravar(CHAVE_NOME, r.nome);
     gravar(CHAVE_TOKEN, r.token);
-    gravar(CHAVE_EMAIL, r.email);
-    gravar(CHAVE_USUARIO, r.nomeUsuario);
+    this.definirConta(r);
   }
 }
 

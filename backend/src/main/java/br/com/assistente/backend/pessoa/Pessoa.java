@@ -29,9 +29,6 @@ public class Pessoa {
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
-    @Column(nullable = false, length = 120)
-    private String nome;
-
     /** Altura em metros (ex.: 1.75). */
     @Column(nullable = false, precision = 4, scale = 2)
     private BigDecimal altura;

@@ -23,7 +23,7 @@ class AuthEPerfilApiTest {
     private static final String SENHA = "senha-forte-123";
     private static final String NOME_COMPLETO = "Marcelo Silva";
     private static final String PERFIL =
-            "{\"nome\":\"Marcelo\",\"altura\":1.75,\"peso\":70,\"metaPeso\":68}";
+            "{\"altura\":1.75,\"peso\":70,\"metaPeso\":68}";
 
     @Autowired
     MockMvc mvc;
@@ -165,7 +165,7 @@ class AuthEPerfilApiTest {
 
         mvc.perform(put("/api/perfil").header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nome\":\"Marcelo\",\"altura\":1.75,\"peso\":80,\"metaPeso\":70,\"imc\":1,"
+                        .content("{\"altura\":1.75,\"peso\":80,\"metaPeso\":70,\"imc\":1,"
                                 + "\"massaMagra\":50.5,\"massaGorda\":29.5}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.imc").value(26.12))
@@ -178,9 +178,10 @@ class AuthEPerfilApiTest {
         String token = registrar();
         mvc.perform(post("/api/perfil").header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nome\":\"\",\"altura\":9,\"peso\":70,\"metaPeso\":68}"))
+                        .content("{\"altura\":9,\"peso\":0,\"metaPeso\":68}"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.erros.nome").exists())
+                .andExpect(jsonPath("$.erros.peso").exists())
                 .andExpect(jsonPath("$.erros.altura").exists());
     }
 }
+

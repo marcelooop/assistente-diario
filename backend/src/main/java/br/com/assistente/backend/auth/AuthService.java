@@ -3,7 +3,6 @@ package br.com.assistente.backend.auth;
 import br.com.assistente.backend.pessoa.PessoaRepository;
 import br.com.assistente.backend.usuario.Usuario;
 import br.com.assistente.backend.usuario.UsuarioRepository;
-import java.util.Locale;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +59,6 @@ public class AuthService {
     }
 
     private static String normalizar(String email) {
-        return email.trim().toLowerCase(Locale.ROOT);
+        return Usuario.normalizarEmail(email);
     }
 }

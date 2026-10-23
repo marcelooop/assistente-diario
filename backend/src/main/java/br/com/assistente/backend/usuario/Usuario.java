@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.Instant;
+import java.util.Locale;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,4 +39,8 @@ public class Usuario {
 
     @Column(nullable = false)
     private Instant criadoEm = Instant.now();
+
+    public static String normalizarEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
 }

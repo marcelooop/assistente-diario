@@ -1,4 +1,4 @@
-﻿import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
@@ -6,88 +6,117 @@ import { Router, provideRouter } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { PessoaForm } from './pessoa-form';
 
-describe('PessoaForm', () => {
-  const URL = 'http://localhost:8080/api/perfil';
+const API = 'http://localhost:8080/api';
+const CONTA = { nome: 'Ana Souza', nomeUsuario: 'ana', email: 'ana@teste.com' };
+const MEDIDAS = {
+  id: 1, altura: 1.6, peso: 80, metaPeso: 65, imc: 31.25,
+  classificacaoImc: 'Obesidade grau I', massaMagra: null, massaGorda: null
+};
+const NAO_ENCONTRADO = { status: 404, statusText: 'Not Found' };
 
+describe('PessoaForm', () => {
+  let http: HttpTestingController;
+
+  /** Cria o formulário; a sessão já guarda os dados da conta, como após o login. */
   function criar() {
     TestBed.configureTestingModule({
       imports: [PessoaForm],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
     });
+    const auth = TestBed.inject(AuthService);
+    auth.definirConta(CONTA);
+    http = TestBed.inject(HttpTestingController);
     const fixture = TestBed.createComponent(PessoaForm);
     fixture.detectChanges();
     return fixture;
   }
 
-  function usuarioNovo(fixture: ReturnType<typeof criar>) {
-    const http = TestBed.inject(HttpTestingController);
-    http.expectOne({ method: 'GET', url: URL }).flush(null, { status: 404, statusText: 'Not Found' });
+  function carregar(fixture: ReturnType<typeof criar>, medidas: object | null) {
+    http.expectOne({ method: 'GET', url: `${API}/conta` }).flush(CONTA);
+    const req = http.expectOne({ method: 'GET', url: `${API}/perfil` });
+    medidas ? req.flush(medidas) : req.flush(null, NAO_ENCONTRADO);
     fixture.detectChanges();
-    return http;
   }
 
-  function preencher(fixture: ReturnType<typeof criar>, valores: Record<string, unknown>) {
-    (fixture.componentInstance as any).form.patchValue(valores);
-    fixture.detectChanges();
-  }
+  const form = (f: ReturnType<typeof criar>) => (f.componentInstance as any).form;
+  const salvar = (f: ReturnType<typeof criar>) => (f.componentInstance as any).salvar();
+
+  afterEach(() => localStorage.clear());
 
   it('calcula o IMC automaticamente a partir de peso e altura', () => {
     const fixture = criar();
-    preencher(fixture, { altura: 1.75, peso: 70 });
+    form(fixture).patchValue({ altura: 1.75, peso: 70 });
+    fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.imc strong').textContent).toContain('22.86');
     expect(fixture.nativeElement.querySelector('.imc em').textContent).toContain('Peso normal');
   });
 
-  it('não exige massa magra nem massa gorda', () => {
+  it('usuário novo vê os dados do cadastro preenchidos; massas são opcionais', () => {
     const fixture = criar();
-    preencher(fixture, { nome: 'Marcelo', altura: 1.75, peso: 70, metaPeso: 68 });
-    expect((fixture.componentInstance as any).form.valid).toBeTrue();
+    carregar(fixture, null);
+
+    expect(form(fixture).value).toEqual(jasmine.objectContaining(CONTA));
+    expect(form(fixture).valid).toBeFalse();
+
+    form(fixture).patchValue({ altura: 1.75, peso: 70, metaPeso: 68 });
+    expect(form(fixture).valid).toBeTrue();
   });
 
-  it('exige nome, altura, peso e meta', () => {
+  it('usuário com cadastro vê conta e medidas e salva as medidas com PUT, sem tocar na conta', () => {
     const fixture = criar();
-    expect((fixture.componentInstance as any).form.valid).toBeFalse();
+    carregar(fixture, MEDIDAS);
+    expect(form(fixture).value.nome).toBe('Ana Souza');
+    expect(form(fixture).value.peso).toBe(80);
+
+    salvar(fixture);
+    http.expectNone({ method: 'PUT', url: `${API}/conta` });
+    http.expectOne({ method: 'PUT', url: `${API}/perfil` }).flush(MEDIDAS);
   });
 
-  it('usuário novo (404) cria o cadastro, com massas vazias como null e sem IMC, e vai à visão geral', () => {
+  it('usuário novo cria as medidas com POST (null nas massas, sem IMC, sem nome) e vai à visão geral', () => {
     const fixture = criar();
-    const http = usuarioNovo(fixture);
+    carregar(fixture, null);
     const navegar = spyOn(TestBed.inject(Router), 'navigateByUrl');
-    preencher(fixture, { nome: ' Marcelo ', altura: 1.75, peso: 70, metaPeso: 68 });
-    (fixture.componentInstance as any).salvar();
+    form(fixture).patchValue({ altura: 1.75, peso: 70, metaPeso: 68 });
 
-    const req = http.expectOne({ method: 'POST', url: URL });
+    salvar(fixture);
+
+    const req = http.expectOne({ method: 'POST', url: `${API}/perfil` });
     expect(req.request.body).toEqual({
-      nome: 'Marcelo', altura: 1.75, peso: 70, metaPeso: 68, massaMagra: null, massaGorda: null
+      altura: 1.75, peso: 70, metaPeso: 68, massaMagra: null, massaGorda: null
     });
-    req.flush({});
+    req.flush(MEDIDAS);
     expect(navegar).toHaveBeenCalledWith('/visao-geral');
   });
 
-  it('usuário novo vê o nome informado no registro já preenchido', () => {
-    TestBed.configureTestingModule({
-      imports: [PessoaForm],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
-    });
-    TestBed.inject(AuthService).nome.set('Marcelo Silva');
-    const fixture = TestBed.createComponent(PessoaForm);
-    fixture.detectChanges();
-    usuarioNovo(fixture);
-    expect((fixture.componentInstance as any).form.value.nome).toBe('Marcelo Silva');
+  it('alterar o cadastro salva a conta primeiro e atualiza o "Olá" do menu', () => {
+    const fixture = criar();
+    carregar(fixture, MEDIDAS);
+    form(fixture).patchValue({ nomeUsuario: 'ana2', email: 'Ana@Teste.com' });
+
+    salvar(fixture);
+
+    const conta = http.expectOne({ method: 'PUT', url: `${API}/conta` });
+    expect(conta.request.body).toEqual({ nome: 'Ana Souza', nomeUsuario: 'ana2', email: 'Ana@Teste.com' });
+    http.expectNone({ method: 'PUT', url: `${API}/perfil` });
+
+    conta.flush({ nome: 'Ana Souza', nomeUsuario: 'ana2', email: 'ana@teste.com' });
+    expect(TestBed.inject(AuthService).nomeUsuario()).toBe('ana2');
+    http.expectOne({ method: 'PUT', url: `${API}/perfil` }).flush(MEDIDAS);
   });
 
-  it('usuário com cadastro carrega os dados e salva com PUT', () => {
+  it('mostra o erro do servidor e não salva as medidas se a conta for recusada', () => {
     const fixture = criar();
-    const http = TestBed.inject(HttpTestingController);
-    http.expectOne({ method: 'GET', url: URL }).flush({
-      id: 1, nome: 'Ana', altura: 1.6, peso: 80, metaPeso: 65, imc: 31.25,
-      classificacaoImc: 'Obesidade grau I', massaMagra: null, massaGorda: null
-    });
-    fixture.detectChanges();
-    expect((fixture.componentInstance as any).form.value.nome).toBe('Ana');
+    carregar(fixture, MEDIDAS);
+    form(fixture).patchValue({ nomeUsuario: 'em-uso' });
 
-    (fixture.componentInstance as any).salvar();
-    http.expectOne({ method: 'PUT', url: URL }).flush({});
+    salvar(fixture);
+    http.expectOne({ method: 'PUT', url: `${API}/conta` })
+      .flush({ detail: 'Este nome de usuario ja esta em uso.' }, { status: 409, statusText: 'Conflict' });
+    fixture.detectChanges();
+
+    http.expectNone({ method: 'PUT', url: `${API}/perfil` });
+    expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain('ja esta em uso');
+    expect(TestBed.inject(AuthService).nomeUsuario()).toBe('ana');
   });
 });
-
