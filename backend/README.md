@@ -21,6 +21,13 @@ Spring Boot 4 · Java 17 · Maven · API REST com login JWT.
 | GET | `/api/conta` | token | Dados do cadastro: `nome`, `nomeUsuario`, `email` |
 | PUT | `/api/conta` | token | Edita nome, nome de usuario e e-mail (409 se ja estiverem em uso por outra conta) |
 | PUT | `/api/conta/senha` | token | Troca a senha (`senhaAtual`, `novaSenha` de 8 a 72 caracteres). 204; 400 se a senha atual estiver errada |
+| GET | `/api/refeicoes` | token | Lista as refeicoes do usuario, ordenadas por horario, com alimentos e `totalCalorias` |
+| GET | `/api/refeicoes/{id}` | token | Uma refeicao (404 se nao existir ou for de outro usuario) |
+| POST | `/api/refeicoes` | token | Cria: `nome`, `horario` (`HH:mm`) e `alimentos` (1 a 100 itens com `nome` e `calorias`) |
+| PUT | `/api/refeicoes/{id}` | token | Atualiza; a lista de alimentos enviada substitui a anterior |
+| DELETE | `/api/refeicoes/{id}` | token | Exclui |
+| POST | `/api/refeicoes/{id}/compartilhar` | token | Envia uma **copia** para o usuario `nomeUsuario` informado (a copia e independente; mostra `compartilhadaPor`) |
+| GET | `/api/refeicoes/{id}/pdf` | token | Baixa o PDF da refeicao |
 | GET | `/api/perfil` | token | Medidas do usuario logado (404 se ainda nao cadastrou) |
 | POST | `/api/perfil` | token | Primeiro cadastro das medidas (409 se ja existe) |
 | PUT | `/api/perfil` | token | Atualiza as medidas |

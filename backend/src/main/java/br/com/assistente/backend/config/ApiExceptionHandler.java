@@ -6,6 +6,9 @@ import br.com.assistente.backend.auth.NomeUsuarioEmUsoException;
 import br.com.assistente.backend.conta.SenhaInvalidaException;
 import br.com.assistente.backend.pessoa.PerfilJaExisteException;
 import br.com.assistente.backend.pessoa.PessoaNaoEncontradaException;
+import br.com.assistente.backend.refeicao.CompartilhamentoInvalidoException;
+import br.com.assistente.backend.refeicao.DestinatarioNaoEncontradoException;
+import br.com.assistente.backend.refeicao.RefeicaoNaoEncontradaException;
 import br.com.assistente.backend.usuario.UsuarioNaoEncontradoException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,8 +22,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(PessoaNaoEncontradaException.class)
-    public ProblemDetail naoEncontrado(PessoaNaoEncontradaException ex) {
+    @ExceptionHandler({ PessoaNaoEncontradaException.class, RefeicaoNaoEncontradaException.class,
+            DestinatarioNaoEncontradoException.class })
+    public ProblemDetail naoEncontrado(RuntimeException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
@@ -41,8 +45,8 @@ public class ApiExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
-    @ExceptionHandler(SenhaInvalidaException.class)
-    public ProblemDetail senhaInvalida(SenhaInvalidaException ex) {
+    @ExceptionHandler({ SenhaInvalidaException.class, CompartilhamentoInvalidoException.class })
+    public ProblemDetail requisicaoInvalida(RuntimeException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
