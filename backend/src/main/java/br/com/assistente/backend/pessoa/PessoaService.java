@@ -1,43 +1,41 @@
 package br.com.assistente.backend.pessoa;
 
-import java.util.List;
+import br.com.assistente.backend.usuario.UsuarioNaoEncontradoException;
+import br.com.assistente.backend.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** Todas as operacoes sao do proprio usuario autenticado: ele nunca ve nem altera dados de outro. */
 @Service
 @RequiredArgsConstructor
 public class PessoaService {
 
     private final PessoaRepository repository;
+    private final UsuarioRepository usuarios;
 
     @Transactional(readOnly = true)
-    public List<PessoaResponse> listar() {
-        return repository.findAll().stream().map(PessoaResponse::de).toList();
-    }
-
-    @Transactional(readOnly = true)
-    public PessoaResponse buscar(Long id) {
-        return PessoaResponse.de(obter(id));
+    public PessoaResponse obter(Long usuarioId) {
+        return PessoaResponse.de(doUsuario(usuarioId));
     }
 
     @Transactional
-    public PessoaResponse criar(PessoaRequest req) {
-        return PessoaResponse.de(repository.save(preencher(new Pessoa(), req)));
+    public PessoaResponse criar(Long usuarioId, PessoaRequest req) {
+        if (repository.existsByUsuarioId(usuarioId)) {
+            throw new PerfilJaExisteException();
+        }
+        Pessoa p = new Pessoa();
+        p.setUsuario(usuarios.findById(usuarioId).orElseThrow(UsuarioNaoEncontradoException::new));
+        return PessoaResponse.de(repository.save(preencher(p, req)));
     }
 
     @Transactional
-    public PessoaResponse atualizar(Long id, PessoaRequest req) {
-        return PessoaResponse.de(repository.save(preencher(obter(id), req)));
+    public PessoaResponse atualizar(Long usuarioId, PessoaRequest req) {
+        return PessoaResponse.de(repository.save(preencher(doUsuario(usuarioId), req)));
     }
 
-    @Transactional
-    public void excluir(Long id) {
-        repository.delete(obter(id));
-    }
-
-    private Pessoa obter(Long id) {
-        return repository.findById(id).orElseThrow(() -> new PessoaNaoEncontradaException(id));
+    private Pessoa doUsuario(Long usuarioId) {
+        return repository.findByUsuarioId(usuarioId).orElseThrow(PessoaNaoEncontradaException::new);
     }
 
     private Pessoa preencher(Pessoa p, PessoaRequest req) {

@@ -2,7 +2,7 @@ package br.com.assistente.backend.pessoa;
 
 public class PessoaNaoEncontradaException extends RuntimeException {
 
-    public PessoaNaoEncontradaException(Long id) {
-        super("Pessoa nao encontrada: " + id);
+    public PessoaNaoEncontradaException() {
+        super("Cadastro de dados pessoais ainda nao realizado.");
     }
 }
