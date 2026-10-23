@@ -1,0 +1,11 @@
+<header class="topo">
+  <strong>Assistente Diário</strong>
+  <nav>
+    <a routerLink="/pessoas/nova" routerLinkActive="ativo">Cadastro</a>
+    <a routerLink="/pessoas" routerLinkActive="ativo" [routerLinkActiveOptions]="{ exact: true }">Pessoas</a>
+  </nav>
+</header>
+
+<main class="conteudo">
+  <router-outlet />
+</main>

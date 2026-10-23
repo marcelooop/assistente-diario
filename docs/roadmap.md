@@ -4,7 +4,8 @@
 - [x] Estrutura inicial de pastas
 - [ ] Definir funcionalidades principais (tarefas, agenda, finanças, notas?)
 - [x] Back end: projeto Spring Boot (Java 17, Maven, H2 em dev, PostgreSQL em prod)
-- [ ] Web: projeto Angular
+- [x] Web: projeto Angular
+- [x] Pessoa: CRUD no back end + cadastro/lista na web, com IMC automático
 - [ ] Mobile: projeto Ionic
 - [ ] Autenticação
 - [ ] Primeira funcionalidade ponta a ponta

@@ -1,0 +1,42 @@
+<section class="cartao">
+  <div class="cabecalho">
+    <h1>Pessoas</h1>
+    <a class="botao" routerLink="/pessoas/nova">Novo cadastro</a>
+  </div>
+
+  @if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
+
+  @if (carregando()) {
+    <p>Carregando…</p>
+  } @else if (pessoas().length === 0 && !erro()) {
+    <p>Nenhum cadastro ainda.</p>
+  } @else if (pessoas().length > 0) {
+    <div class="rolagem">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Peso</th>
+            <th>Meta</th>
+            <th>IMC</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of pessoas(); track p.id) {
+            <tr>
+              <td>{{ p.nome }}</td>
+              <td>{{ p.peso }} kg</td>
+              <td>{{ p.metaPeso }} kg</td>
+              <td>{{ p.imc }} <small>({{ p.classificacaoImc }})</small></td>
+              <td class="acoes">
+                <a class="botao secundario" [routerLink]="['/pessoas', p.id, 'editar']">Editar</a>
+                <button class="botao perigo" type="button" (click)="excluir(p)">Excluir</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
