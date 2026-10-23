@@ -23,4 +23,8 @@ export class ContaService {
   atualizar(dados: Conta): Observable<Conta> {
     return this.http.put<Conta>(this.url, dados);
   }
+
+  trocarSenha(senhaAtual: string, novaSenha: string): Observable<void> {
+    return this.http.put<void>(`${this.url}/senha`, { senhaAtual, novaSenha });
+  }
 }

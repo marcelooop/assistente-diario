@@ -3,6 +3,7 @@ package br.com.assistente.backend.config;
 import br.com.assistente.backend.auth.CredenciaisInvalidasException;
 import br.com.assistente.backend.auth.EmailJaCadastradoException;
 import br.com.assistente.backend.auth.NomeUsuarioEmUsoException;
+import br.com.assistente.backend.conta.SenhaInvalidaException;
 import br.com.assistente.backend.pessoa.PerfilJaExisteException;
 import br.com.assistente.backend.pessoa.PessoaNaoEncontradaException;
 import br.com.assistente.backend.usuario.UsuarioNaoEncontradoException;
@@ -38,6 +39,11 @@ public class ApiExceptionHandler {
     @ExceptionHandler({ CredenciaisInvalidasException.class, UsuarioNaoEncontradoException.class })
     public ProblemDetail naoAutenticado(RuntimeException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(SenhaInvalidaException.class)
+    public ProblemDetail senhaInvalida(SenhaInvalidaException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

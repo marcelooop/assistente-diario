@@ -1,0 +1,38 @@
+<section class="cartao">
+  <h2>Alterar senha</h2>
+
+  <form [formGroup]="form" (ngSubmit)="trocar()" novalidate>
+    <label>
+      Senha atual
+      <input type="password" formControlName="senhaAtual" autocomplete="current-password" />
+      @if (form.controls.senhaAtual.invalid && form.controls.senhaAtual.touched) {
+        <small class="erro">Informe a senha atual.</small>
+      }
+    </label>
+
+    <label>
+      Nova senha (mínimo 8 caracteres)
+      <input type="password" formControlName="novaSenha" autocomplete="new-password" />
+      @if (form.controls.novaSenha.invalid && form.controls.novaSenha.touched) {
+        <small class="erro">A senha deve ter de 8 a 72 caracteres.</small>
+      }
+    </label>
+
+    <label>
+      Confirmar nova senha
+      <input type="password" formControlName="confirmacao" autocomplete="new-password" />
+      @if (form.hasError('senhasDiferentes') && form.controls.confirmacao.touched) {
+        <small class="erro">As senhas não coincidem.</small>
+      }
+    </label>
+
+    @if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
+    @if (sucesso()) { <p class="sucesso" role="status">Senha alterada com sucesso.</p> }
+
+    <div class="acoes">
+      <button class="botao" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Alterando…' : 'Alterar senha' }}
+      </button>
+    </div>
+  </form>
+</section>

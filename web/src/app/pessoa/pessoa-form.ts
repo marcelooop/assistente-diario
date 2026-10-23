@@ -8,6 +8,7 @@ import { Observable, catchError, forkJoin, of, switchMap, tap, throwError } from
 import { mensagemDeErro } from '../api.config';
 import { AuthService } from '../auth/auth.service';
 import { Conta, ContaService } from '../conta/conta.service';
+import { TrocaSenha } from '../conta/troca-senha';
 import { calcularImc, classificarImc } from './imc';
 import { Pessoa, PessoaRequest } from './pessoa.model';
 import { PessoaService } from './pessoa.service';
@@ -15,7 +16,7 @@ import { PessoaService } from './pessoa.service';
 /** "Meus dados": dados do cadastro (conta) e medidas do usuário logado. */
 @Component({
   selector: 'app-pessoa-form',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, TrocaSenha],
   templateUrl: './pessoa-form.html',
   styleUrl: './pessoa-form.css'
 })

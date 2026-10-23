@@ -6,6 +6,7 @@ import br.com.assistente.backend.usuario.Usuario;
 import br.com.assistente.backend.usuario.UsuarioNaoEncontradoException;
 import br.com.assistente.backend.usuario.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ContaService {
 
     private final UsuarioRepository usuarios;
+    private final PasswordEncoder encoder;
 
     @Transactional(readOnly = true)
     public ContaResponse obter(Long usuarioId) {
@@ -35,6 +37,18 @@ public class ContaService {
         u.setNomeUsuario(req.nomeUsuario());
         u.setEmail(email);
         return ContaResponse.de(usuarios.saveAndFlush(u));
+    }
+
+    @Transactional
+    public void trocarSenha(Long usuarioId, TrocaSenhaRequest req) {
+        Usuario u = buscar(usuarioId);
+        if (!encoder.matches(req.senhaAtual(), u.getSenhaHash())) {
+            throw new SenhaInvalidaException("A senha atual esta incorreta.");
+        }
+        if (req.novaSenha().equals(req.senhaAtual())) {
+            throw new SenhaInvalidaException("A nova senha deve ser diferente da atual.");
+        }
+        u.setSenhaHash(encoder.encode(req.novaSenha()));
     }
 
     private Usuario buscar(Long usuarioId) {

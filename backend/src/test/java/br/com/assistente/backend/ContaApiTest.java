@@ -109,6 +109,58 @@ class ContaApiTest {
                 .andExpect(jsonPath("$.erros.email").exists());
     }
 
+    private static String senhas(String atual, String nova) {
+        return "{\"senhaAtual\":\"" + atual + "\",\"novaSenha\":\"" + nova + "\"}";
+    }
+
+    private int login(Conta c, String senha) throws Exception {
+        return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"" + c.email() + "\",\"senha\":\"" + senha + "\"}"))
+                .andReturn().getResponse().getStatus();
+    }
+
+    @Test
+    void trocaASenhaExigindoASenhaAtual() throws Exception {
+        Conta c = registrar();
+        mvc.perform(put("/api/conta/senha").header("Authorization", bearer(c))
+                        .contentType(MediaType.APPLICATION_JSON).content(senhas(SENHA, "outra-senha-456")))
+                .andExpect(status().isNoContent());
+
+        org.junit.jupiter.api.Assertions.assertEquals(200, login(c, "outra-senha-456"));
+        org.junit.jupiter.api.Assertions.assertEquals(401, login(c, SENHA));
+    }
+
+    @Test
+    void recusaSenhaAtualErradaComo400ENaoMudaASenha() throws Exception {
+        Conta c = registrar();
+        // 400 (e nao 401): o app nao pode encerrar a sessao so porque o usuario errou a senha atual
+        mvc.perform(put("/api/conta/senha").header("Authorization", bearer(c))
+                        .contentType(MediaType.APPLICATION_JSON).content(senhas("errada-123456", "outra-senha-456")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("A senha atual esta incorreta."));
+
+        org.junit.jupiter.api.Assertions.assertEquals(200, login(c, SENHA));
+    }
+
+    @Test
+    void recusaNovaSenhaCurtaOuIgualAAtual() throws Exception {
+        Conta c = registrar();
+        mvc.perform(put("/api/conta/senha").header("Authorization", bearer(c))
+                        .contentType(MediaType.APPLICATION_JSON).content(senhas(SENHA, "curta")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erros.novaSenha").exists());
+        mvc.perform(put("/api/conta/senha").header("Authorization", bearer(c))
+                        .contentType(MediaType.APPLICATION_JSON).content(senhas(SENHA, SENHA)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void trocaDeSenhaExigeAutenticacao() throws Exception {
+        mvc.perform(put("/api/conta/senha").contentType(MediaType.APPLICATION_JSON)
+                        .content(senhas(SENHA, "outra-senha-456")))
+                .andExpect(status().isUnauthorized());
+    }
+
     @Test
     void exigeAutenticacao() throws Exception {
         mvc.perform(get("/api/conta")).andExpect(status().isUnauthorized());

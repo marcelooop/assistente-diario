@@ -46,6 +46,17 @@ input {
   font-weight: 400;
 }
 
+.sucesso {
+  color: #1b6e3c;
+  font-weight: 600;
+}
+
+.cartao + .cartao,
+.cartao + app-troca-senha {
+  display: block;
+  margin-top: 24px;
+}
+
 .dica {
   font-weight: 400;
   color: #5b6677;

@@ -20,6 +20,7 @@ Spring Boot 4 · Java 17 · Maven · API REST com login JWT.
 | POST | `/api/auth/login` | publico | Devolve `token`, `email`, `nome`, `nomeUsuario` e `perfilCompleto` |
 | GET | `/api/conta` | token | Dados do cadastro: `nome`, `nomeUsuario`, `email` |
 | PUT | `/api/conta` | token | Edita nome, nome de usuario e e-mail (409 se ja estiverem em uso por outra conta) |
+| PUT | `/api/conta/senha` | token | Troca a senha (`senhaAtual`, `novaSenha` de 8 a 72 caracteres). 204; 400 se a senha atual estiver errada |
 | GET | `/api/perfil` | token | Medidas do usuario logado (404 se ainda nao cadastrou) |
 | POST | `/api/perfil` | token | Primeiro cadastro das medidas (409 se ja existe) |
 | PUT | `/api/perfil` | token | Atualiza as medidas |

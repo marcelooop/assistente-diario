@@ -2,12 +2,14 @@ package br.com.assistente.backend.conta;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Dados da conta (nome, nome de usuario, e-mail) do usuario logado; o id vem do token. */
@@ -26,5 +28,11 @@ public class ContaController {
     @PutMapping
     public ContaResponse atualizar(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ContaRequest req) {
         return service.atualizar(Long.valueOf(jwt.getSubject()), req);
+    }
+
+    @PutMapping("/senha")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void trocarSenha(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody TrocaSenhaRequest req) {
+        service.trocarSenha(Long.valueOf(jwt.getSubject()), req);
     }
 }
