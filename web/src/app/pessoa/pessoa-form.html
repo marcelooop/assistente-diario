@@ -1,5 +1,8 @@
 <section class="cartao">
-  <h1>{{ id() === null ? 'Novo cadastro' : 'Editar cadastro' }}</h1>
+  <h1>{{ existente() ? 'Meus dados' : 'Complete seu cadastro' }}</h1>
+  @if (!existente() && !carregando()) {
+    <p>Informe seus dados para começar a usar o aplicativo.</p>
+  }
 
   <form [formGroup]="form" (ngSubmit)="salvar()" novalidate>
     <label>
@@ -59,10 +62,12 @@
     @if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
 
     <div class="acoes">
-      <button class="botao" type="submit" [disabled]="salvando()">
+      <button class="botao" type="submit" [disabled]="salvando() || carregando()">
         {{ salvando() ? 'Salvando…' : 'Salvar' }}
       </button>
-      <a class="botao secundario" routerLink="/pessoas">Cancelar</a>
+      @if (existente()) {
+        <a class="botao secundario" routerLink="/inicio">Cancelar</a>
+      }
     </div>
   </form>
 </section>

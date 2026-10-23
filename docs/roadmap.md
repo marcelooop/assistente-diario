@@ -7,5 +7,7 @@
 - [x] Web: projeto Angular
 - [x] Pessoa: CRUD no back end + cadastro/lista na web, com IMC automático
 - [ ] Mobile: projeto Ionic
-- [ ] Autenticação
+- [x] Autenticação (e-mail e senha, JWT) com login, registro e página inicial em branco
+- [ ] Recuperação de senha / confirmação de e-mail
+- [ ] Mobile (Ionic): telas de login e cadastro
 - [ ] Primeira funcionalidade ponta a ponta

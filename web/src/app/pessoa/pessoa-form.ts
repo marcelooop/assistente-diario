@@ -2,12 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
+import { mensagemDeErro } from '../api.config';
 import { calcularImc, classificarImc } from './imc';
 import { PessoaRequest } from './pessoa.model';
 import { PessoaService } from './pessoa.service';
 
+/** Dados pessoais do usuário logado: primeiro cadastro (usuário novo) ou edição. */
 @Component({
   selector: 'app-pessoa-form',
   imports: [ReactiveFormsModule, RouterLink],
@@ -18,9 +20,10 @@ export class PessoaForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(PessoaService);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
 
-  protected readonly id = signal<number | null>(null);
+  /** true quando o usuário já tem cadastro (então salvar = atualizar). */
+  protected readonly existente = signal(false);
+  protected readonly carregando = signal(true);
   protected readonly salvando = signal(false);
   protected readonly erro = signal<string | null>(null);
 
@@ -47,14 +50,20 @@ export class PessoaForm implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.id.set(Number(id));
-      this.service.buscar(Number(id)).subscribe({
-        next: (p) => this.form.patchValue(p),
-        error: () => this.erro.set('Não foi possível carregar o cadastro.')
-      });
-    }
+    this.service.obter().subscribe({
+      next: (p) => {
+        this.form.patchValue(p);
+        this.existente.set(true);
+        this.carregando.set(false);
+      },
+      error: (e: HttpErrorResponse) => {
+        // 404 = usuário novo, ainda sem cadastro: segue com o formulário em branco
+        if (e.status !== 404) {
+          this.erro.set(mensagemDeErro(e, 'Não foi possível carregar seus dados.'));
+        }
+        this.carregando.set(false);
+      }
+    });
   }
 
   protected invalido(campo: keyof PessoaRequest): boolean {
@@ -76,20 +85,15 @@ export class PessoaForm implements OnInit {
       massaMagra: v.massaMagra,
       massaGorda: v.massaGorda
     };
-    const id = this.id();
-    const chamada = id === null ? this.service.criar(dados) : this.service.atualizar(id, dados);
+    const chamada = this.existente() ? this.service.atualizar(dados) : this.service.criar(dados);
 
     this.salvando.set(true);
     this.erro.set(null);
     chamada.subscribe({
-      next: () => this.router.navigate(['/pessoas']),
+      next: () => this.router.navigateByUrl('/inicio'),
       error: (e: HttpErrorResponse) => {
         this.salvando.set(false);
-        this.erro.set(
-          e.status === 0
-            ? 'Não foi possível conectar ao servidor. O back end está rodando?'
-            : e.error?.detail ?? 'Erro ao salvar.'
-        );
+        this.erro.set(mensagemDeErro(e, 'Erro ao salvar.'));
       }
     });
   }

@@ -9,7 +9,23 @@
 
 .topo nav {
   display: flex;
+  align-items: center;
   gap: 16px;
+}
+
+.usuario {
+  font-size: 0.85rem;
+  color: #cfd8e6;
+}
+
+.sair {
+  border: 1px solid #cfd8e6;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font: inherit;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
 }
 
 .topo a {

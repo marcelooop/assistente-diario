@@ -1,9 +1,13 @@
 <header class="topo">
   <strong>Assistente Diário</strong>
-  <nav>
-    <a routerLink="/pessoas/nova" routerLinkActive="ativo">Cadastro</a>
-    <a routerLink="/pessoas" routerLinkActive="ativo" [routerLinkActiveOptions]="{ exact: true }">Pessoas</a>
-  </nav>
+  @if (auth.logado()) {
+    <nav>
+      <a routerLink="/inicio" routerLinkActive="ativo">Início</a>
+      <a routerLink="/perfil" routerLinkActive="ativo">Meus dados</a>
+      <span class="usuario">{{ auth.email() }}</span>
+      <button type="button" class="sair" (click)="auth.sair()">Sair</button>
+    </nav>
+  }
 </header>
 
 <main class="conteudo">

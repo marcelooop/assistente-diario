@@ -1,11 +1,13 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 
 import { PessoaForm } from './pessoa-form';
 
 describe('PessoaForm', () => {
+  const URL = 'http://localhost:8080/api/perfil';
+
   function criar() {
     TestBed.configureTestingModule({
       imports: [PessoaForm],
@@ -14,6 +16,13 @@ describe('PessoaForm', () => {
     const fixture = TestBed.createComponent(PessoaForm);
     fixture.detectChanges();
     return fixture;
+  }
+
+  function usuarioNovo(fixture: ReturnType<typeof criar>) {
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne({ method: 'GET', url: URL }).flush(null, { status: 404, statusText: 'Not Found' });
+    fixture.detectChanges();
+    return http;
   }
 
   function preencher(fixture: ReturnType<typeof criar>, valores: Record<string, unknown>) {
@@ -39,16 +48,32 @@ describe('PessoaForm', () => {
     expect((fixture.componentInstance as any).form.valid).toBeFalse();
   });
 
-  it('envia massas vazias como null e não envia IMC', () => {
+  it('usuário novo (404) cria o cadastro, com massas vazias como null e sem IMC, e vai ao início', () => {
     const fixture = criar();
-    const http = TestBed.inject(HttpTestingController);
+    const http = usuarioNovo(fixture);
+    const navegar = spyOn(TestBed.inject(Router), 'navigateByUrl');
     preencher(fixture, { nome: ' Marcelo ', altura: 1.75, peso: 70, metaPeso: 68 });
     (fixture.componentInstance as any).salvar();
 
-    const req = http.expectOne('http://localhost:8080/api/pessoas');
-    expect(req.request.method).toBe('POST');
+    const req = http.expectOne({ method: 'POST', url: URL });
     expect(req.request.body).toEqual({
       nome: 'Marcelo', altura: 1.75, peso: 70, metaPeso: 68, massaMagra: null, massaGorda: null
     });
+    req.flush({});
+    expect(navegar).toHaveBeenCalledWith('/inicio');
+  });
+
+  it('usuário com cadastro carrega os dados e salva com PUT', () => {
+    const fixture = criar();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne({ method: 'GET', url: URL }).flush({
+      id: 1, nome: 'Ana', altura: 1.6, peso: 80, metaPeso: 65, imc: 31.25,
+      classificacaoImc: 'Obesidade grau I', massaMagra: null, massaGorda: null
+    });
+    fixture.detectChanges();
+    expect((fixture.componentInstance as any).form.value.nome).toBe('Ana');
+
+    (fixture.componentInstance as any).salvar();
+    http.expectOne({ method: 'PUT', url: URL }).flush({});
   });
 });
