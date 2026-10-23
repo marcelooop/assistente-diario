@@ -24,13 +24,13 @@ describe('autenticação', () => {
   it('login guarda o token e indica o destino conforme o perfil', () => {
     const auth = TestBed.inject(AuthService);
     expect(auth.logado()).toBeFalse();
-    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: false })).toBe('/perfil');
-    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: true })).toBe('/visao-geral');
+    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', nome: 'Ana Souza', nomeUsuario: 'ana', perfilCompleto: false })).toBe('/perfil');
+    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', nome: 'Ana Souza', nomeUsuario: 'ana', perfilCompleto: true })).toBe('/visao-geral');
 
     auth.login('a@a.com', 'senha-123').subscribe();
     TestBed.inject(HttpTestingController)
       .expectOne(`${API}/auth/login`)
-      .flush({ token: 'abc', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: true });
+      .flush({ token: 'abc', email: 'a@a.com', nome: 'Ana Souza', nomeUsuario: 'ana', perfilCompleto: true });
 
     expect(auth.logado()).toBeTrue();
     expect(localStorage.getItem('assistente.token')).toBe('abc');
@@ -42,7 +42,7 @@ describe('autenticação', () => {
     auth.login('a@a.com', 'x').subscribe();
     TestBed.inject(HttpTestingController)
       .expectOne(`${API}/auth/login`)
-      .flush({ token: 'abc', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: true });
+      .flush({ token: 'abc', email: 'a@a.com', nome: 'Ana Souza', nomeUsuario: 'ana', perfilCompleto: true });
 
     auth.sair();
 
@@ -117,4 +117,5 @@ describe('Login', () => {
     TestBed.inject(HttpTestingController).expectNone(`${API}/auth/login`);
   });
 });
+
 

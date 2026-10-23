@@ -1,5 +1,8 @@
 package br.com.assistente.backend.auth;
 
-/** perfilCompleto = false indica usuario novo, que ainda precisa preencher os dados de Pessoa. */
-public record AuthResponse(String token, String email, String nomeUsuario, boolean perfilCompleto) {
+/**
+ * nomeUsuario e o apelido exibido em "Ola, ...". perfilCompleto = false indica usuario novo,
+ * que ainda precisa preencher os dados de Pessoa.
+ */
+public record AuthResponse(String token, String email, String nome, String nomeUsuario, boolean perfilCompleto) {
 }

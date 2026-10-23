@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record RegistroRequest(
+        @NotBlank @Size(max = 120) String nome,
         @NotBlank @Size(min = 3, max = 30)
         @Pattern(regexp = "^[A-Za-z0-9._-]*$", message = "use apenas letras, numeros, ponto, hifen e sublinhado")
         String nomeUsuario,

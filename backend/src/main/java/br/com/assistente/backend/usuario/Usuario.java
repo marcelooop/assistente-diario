@@ -24,6 +24,10 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 254)
     private String email;
 
+    /** Nome da pessoa (ex.: "Marcelo Silva"). */
+    @Column(nullable = false, length = 120)
+    private String nome;
+
     /** Nome exibido ao usuario ("Ola, marcelo"). Unico, sem diferenciar maiusculas de minusculas. */
     @Column(nullable = false, unique = true, length = 30)
     private String nomeUsuario;

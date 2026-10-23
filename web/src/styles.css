@@ -46,6 +46,11 @@ input {
   font-weight: 400;
 }
 
+.dica {
+  font-weight: 400;
+  color: #5b6677;
+}
+
 .acoes {
   display: flex;
   gap: 12px;

@@ -8,6 +8,9 @@ import { API_URL } from '../api.config';
 export interface AuthResponse {
   token: string;
   email: string;
+  /** Nome da pessoa (ex.: "Marcelo Silva"). */
+  nome: string;
+  /** Apelido exibido em "Olá, ...". */
   nomeUsuario: string;
   /** false = usuário novo, que ainda precisa preencher os dados pessoais. */
   perfilCompleto: boolean;
@@ -16,6 +19,7 @@ export interface AuthResponse {
 const CHAVE_TOKEN = 'assistente.token';
 const CHAVE_EMAIL = 'assistente.email';
 const CHAVE_USUARIO = 'assistente.usuario';
+const CHAVE_NOME = 'assistente.nome';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -24,6 +28,7 @@ export class AuthService {
 
   readonly token = signal<string | null>(ler(CHAVE_TOKEN));
   readonly email = signal<string | null>(ler(CHAVE_EMAIL));
+  readonly nome = signal<string | null>(ler(CHAVE_NOME));
   readonly nomeUsuario = signal<string | null>(ler(CHAVE_USUARIO));
   readonly logado = computed(() => this.token() !== null);
 
@@ -33,9 +38,9 @@ export class AuthService {
       .pipe(tap((r) => this.guardar(r)));
   }
 
-  registrar(nomeUsuario: string, email: string, senha: string): Observable<AuthResponse> {
+  registrar(nome: string, nomeUsuario: string, email: string, senha: string): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${API_URL}/auth/registrar`, { nomeUsuario, email, senha })
+      .post<AuthResponse>(`${API_URL}/auth/registrar`, { nome, nomeUsuario, email, senha })
       .pipe(tap((r) => this.guardar(r)));
   }
 
@@ -43,6 +48,8 @@ export class AuthService {
     this.token.set(null);
     this.email.set(null);
     this.nomeUsuario.set(null);
+    this.nome.set(null);
+    remover(CHAVE_NOME);
     remover(CHAVE_TOKEN);
     remover(CHAVE_EMAIL);
     remover(CHAVE_USUARIO);
@@ -58,6 +65,8 @@ export class AuthService {
     this.token.set(r.token);
     this.email.set(r.email);
     this.nomeUsuario.set(r.nomeUsuario);
+    this.nome.set(r.nome);
+    gravar(CHAVE_NOME, r.nome);
     gravar(CHAVE_TOKEN, r.token);
     gravar(CHAVE_EMAIL, r.email);
     gravar(CHAVE_USUARIO, r.nomeUsuario);

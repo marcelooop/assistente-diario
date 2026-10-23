@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 
+import { AuthService } from '../auth/auth.service';
 import { PessoaForm } from './pessoa-form';
 
 describe('PessoaForm', () => {
@@ -61,6 +62,18 @@ describe('PessoaForm', () => {
     });
     req.flush({});
     expect(navegar).toHaveBeenCalledWith('/visao-geral');
+  });
+
+  it('usuário novo vê o nome informado no registro já preenchido', () => {
+    TestBed.configureTestingModule({
+      imports: [PessoaForm],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+    });
+    TestBed.inject(AuthService).nome.set('Marcelo Silva');
+    const fixture = TestBed.createComponent(PessoaForm);
+    fixture.detectChanges();
+    usuarioNovo(fixture);
+    expect((fixture.componentInstance as any).form.value.nome).toBe('Marcelo Silva');
   });
 
   it('usuário com cadastro carrega os dados e salva com PUT', () => {

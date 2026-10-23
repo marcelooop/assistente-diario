@@ -38,10 +38,11 @@ public class AuthService {
         }
         Usuario u = new Usuario();
         u.setEmail(email);
+        u.setNome(req.nome().trim());
         u.setNomeUsuario(req.nomeUsuario());
         u.setSenhaHash(encoder.encode(req.senha()));
         u = usuarios.saveAndFlush(u);
-        return new AuthResponse(tokens.gerar(u), u.getEmail(), u.getNomeUsuario(), false);
+        return new AuthResponse(tokens.gerar(u), u.getEmail(), u.getNome(), u.getNomeUsuario(), false);
     }
 
     @Transactional(readOnly = true)
@@ -54,7 +55,7 @@ public class AuthService {
         if (!encoder.matches(req.senha(), u.getSenhaHash())) {
             throw new CredenciaisInvalidasException();
         }
-        return new AuthResponse(tokens.gerar(u), u.getEmail(), u.getNomeUsuario(),
+        return new AuthResponse(tokens.gerar(u), u.getEmail(), u.getNome(), u.getNomeUsuario(),
                 pessoas.existsByUsuarioId(u.getId()));
     }
 

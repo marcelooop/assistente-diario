@@ -3,7 +3,16 @@
 
   <form [formGroup]="form" (ngSubmit)="criar()" novalidate>
     <label>
+      Nome
+      <input type="text" formControlName="nome" autocomplete="name" maxlength="120" />
+      @if (form.controls.nome.invalid && form.controls.nome.touched) {
+        <small class="erro">Informe seu nome.</small>
+      }
+    </label>
+
+    <label>
       Nome de usuário
+      <small class="dica">É o nome que aparece em "Olá, ..." no menu.</small>
       <input type="text" formControlName="nomeUsuario" autocomplete="nickname" maxlength="30" />
       @if (form.controls.nomeUsuario.invalid && form.controls.nomeUsuario.touched) {
         <small class="erro">De 3 a 30 caracteres: letras, números, ponto, hífen ou sublinhado.</small>

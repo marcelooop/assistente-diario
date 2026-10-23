@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { mensagemDeErro } from '../api.config';
+import { AuthService } from '../auth/auth.service';
 import { calcularImc, classificarImc } from './imc';
 import { PessoaRequest } from './pessoa.model';
 import { PessoaService } from './pessoa.service';
@@ -20,6 +21,7 @@ export class PessoaForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(PessoaService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   /** true quando o usuário já tem cadastro (então salvar = atualizar). */
   protected readonly existente = signal(false);
@@ -57,8 +59,10 @@ export class PessoaForm implements OnInit {
         this.carregando.set(false);
       },
       error: (e: HttpErrorResponse) => {
-        // 404 = usuário novo, ainda sem cadastro: segue com o formulário em branco
-        if (e.status !== 404) {
+        // 404 = usuário novo, ainda sem cadastro: o nome informado no registro já vem preenchido
+        if (e.status === 404) {
+          this.form.patchValue({ nome: this.auth.nome() ?? '' });
+        } else {
           this.erro.set(mensagemDeErro(e, 'Não foi possível carregar seus dados.'));
         }
         this.carregando.set(false);

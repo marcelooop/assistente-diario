@@ -16,8 +16,8 @@ Spring Boot 4 · Java 17 · Maven · API REST com login JWT.
 
 | Metodo | Rota | Acesso | Descricao |
 |---|---|---|---|
-| POST | `/api/auth/registrar` | publico | Cria conta (`nomeUsuario` unico de 3 a 30 caracteres `A-Z a-z 0-9 . _ -`, `email`, `senha` de 8 a 72 caracteres) e ja devolve o token |
-| POST | `/api/auth/login` | publico | Devolve `token`, `email`, `nomeUsuario` e `perfilCompleto` |
+| POST | `/api/auth/registrar` | publico | Cria conta (`nome`, `nomeUsuario` unico de 3 a 30 caracteres `A-Z a-z 0-9 . _ -`, `email`, `senha` de 8 a 72 caracteres) e ja devolve o token |
+| POST | `/api/auth/login` | publico | Devolve `token`, `email`, `nome`, `nomeUsuario` e `perfilCompleto` |
 | GET | `/api/perfil` | token | Dados pessoais do usuario logado (404 se ainda nao cadastrou) |
 | POST | `/api/perfil` | token | Primeiro cadastro dos dados pessoais (409 se ja existe) |
 | PUT | `/api/perfil` | token | Atualiza os dados pessoais |

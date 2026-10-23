@@ -25,6 +25,7 @@ export class Registro {
 
   protected readonly form = this.fb.nonNullable.group(
     {
+      nome: ['', [Validators.required, Validators.maxLength(120), Validators.pattern(/\S/)]],
       nomeUsuario: [
         '',
         [Validators.required, Validators.minLength(3), Validators.maxLength(30), Validators.pattern(/^[A-Za-z0-9._-]+$/)]
@@ -42,10 +43,10 @@ export class Registro {
       this.form.markAllAsTouched();
       return;
     }
-    const { nomeUsuario, email, senha } = this.form.getRawValue();
+    const { nome, nomeUsuario, email, senha } = this.form.getRawValue();
     this.enviando.set(true);
     this.erro.set(null);
-    this.auth.registrar(nomeUsuario, email.trim(), senha).subscribe({
+    this.auth.registrar(nome.trim(), nomeUsuario, email.trim(), senha).subscribe({
       // conta nova nunca tem dados pessoais: segue direto para o cadastro
       next: (r) => this.router.navigateByUrl(this.auth.destinoPosLogin(r)),
       error: (e: HttpErrorResponse) => {

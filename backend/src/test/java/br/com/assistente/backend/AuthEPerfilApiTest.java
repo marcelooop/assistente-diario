@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 class AuthEPerfilApiTest {
 
     private static final String SENHA = "senha-forte-123";
+    private static final String NOME_COMPLETO = "Marcelo Silva";
     private static final String PERFIL =
             "{\"nome\":\"Marcelo\",\"altura\":1.75,\"peso\":70,\"metaPeso\":68}";
 
@@ -40,13 +41,14 @@ class AuthEPerfilApiTest {
     }
 
     private static String registro(String nome, String email, String senha) {
-        return "{\"nomeUsuario\":\"" + nome + "\",\"email\":\"" + email + "\",\"senha\":\"" + senha + "\"}";
+        return "{\"nome\":\"" + NOME_COMPLETO + "\",\"nomeUsuario\":\"" + nome + "\",\"email\":\"" + email + "\",\"senha\":\"" + senha + "\"}";
     }
 
     private String registrar(String nome, String email) throws Exception {
         String corpo = mvc.perform(post("/api/auth/registrar").contentType(MediaType.APPLICATION_JSON)
                         .content(registro(nome, email, SENHA)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nome").value(NOME_COMPLETO))
                 .andExpect(jsonPath("$.nomeUsuario").value(nome))
                 .andExpect(jsonPath("$.perfilCompleto").value(false))
                 .andReturn().getResponse().getContentAsString();
@@ -81,6 +83,7 @@ class AuthEPerfilApiTest {
                         .content(login(email, SENHA)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.perfilCompleto").value(true))
+                .andExpect(jsonPath("$.nome").value(NOME_COMPLETO))
                 .andExpect(jsonPath("$.nomeUsuario").value(nome))
                 .andExpect(jsonPath("$.token").isString());
     }
@@ -123,6 +126,15 @@ class AuthEPerfilApiTest {
                 .andExpect(jsonPath("$.erros.nomeUsuario").exists())
                 .andExpect(jsonPath("$.erros.email").exists())
                 .andExpect(jsonPath("$.erros.senha").exists());
+    }
+
+    @Test
+    void registroExigeNome() throws Exception {
+        mvc.perform(post("/api/auth/registrar").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"  \",\"nomeUsuario\":\"" + novoNome() + "\",\"email\":\""
+                                + novoEmail() + "\",\"senha\":\"" + SENHA + "\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erros.nome").exists());
     }
 
     @Test
