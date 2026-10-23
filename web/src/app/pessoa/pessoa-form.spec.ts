@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+﻿import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
@@ -48,7 +48,7 @@ describe('PessoaForm', () => {
     expect((fixture.componentInstance as any).form.valid).toBeFalse();
   });
 
-  it('usuário novo (404) cria o cadastro, com massas vazias como null e sem IMC, e vai ao início', () => {
+  it('usuário novo (404) cria o cadastro, com massas vazias como null e sem IMC, e vai à visão geral', () => {
     const fixture = criar();
     const http = usuarioNovo(fixture);
     const navegar = spyOn(TestBed.inject(Router), 'navigateByUrl');
@@ -60,7 +60,7 @@ describe('PessoaForm', () => {
       nome: 'Marcelo', altura: 1.75, peso: 70, metaPeso: 68, massaMagra: null, massaGorda: null
     });
     req.flush({});
-    expect(navegar).toHaveBeenCalledWith('/inicio');
+    expect(navegar).toHaveBeenCalledWith('/visao-geral');
   });
 
   it('usuário com cadastro carrega os dados e salva com PUT', () => {
@@ -77,3 +77,4 @@ describe('PessoaForm', () => {
     http.expectOne({ method: 'PUT', url: URL }).flush({});
   });
 });
+

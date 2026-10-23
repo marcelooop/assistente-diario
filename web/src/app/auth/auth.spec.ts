@@ -1,4 +1,4 @@
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+﻿import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
@@ -24,13 +24,13 @@ describe('autenticação', () => {
   it('login guarda o token e indica o destino conforme o perfil', () => {
     const auth = TestBed.inject(AuthService);
     expect(auth.logado()).toBeFalse();
-    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', perfilCompleto: false })).toBe('/perfil');
-    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', perfilCompleto: true })).toBe('/inicio');
+    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: false })).toBe('/perfil');
+    expect(auth.destinoPosLogin({ token: 't', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: true })).toBe('/visao-geral');
 
     auth.login('a@a.com', 'senha-123').subscribe();
     TestBed.inject(HttpTestingController)
       .expectOne(`${API}/auth/login`)
-      .flush({ token: 'abc', email: 'a@a.com', perfilCompleto: true });
+      .flush({ token: 'abc', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: true });
 
     expect(auth.logado()).toBeTrue();
     expect(localStorage.getItem('assistente.token')).toBe('abc');
@@ -42,7 +42,7 @@ describe('autenticação', () => {
     auth.login('a@a.com', 'x').subscribe();
     TestBed.inject(HttpTestingController)
       .expectOne(`${API}/auth/login`)
-      .flush({ token: 'abc', email: 'a@a.com', perfilCompleto: true });
+      .flush({ token: 'abc', email: 'a@a.com', nomeUsuario: 'ana', perfilCompleto: true });
 
     auth.sair();
 
@@ -74,7 +74,7 @@ describe('autenticação', () => {
     expect(auth.logado()).toBeFalse();
   });
 
-  it('guards: visitante vai ao login, logado vai ao início', () => {
+  it('guards: visitante vai ao login, logado vai à visão geral', () => {
     const auth = TestBed.inject(AuthService);
     const rota = {} as never;
     const estado = {} as never;
@@ -85,10 +85,10 @@ describe('autenticação', () => {
 
     auth.token.set('abc');
     expect(TestBed.runInInjectionContext(() => authGuard(rota, estado))).toBeTrue();
-    expect(TestBed.runInInjectionContext(() => visitanteGuard(rota, estado)).toString()).toBe('/inicio');
+    expect(TestBed.runInInjectionContext(() => visitanteGuard(rota, estado)).toString()).toBe('/visao-geral');
   });
 
-  it('guard do início manda usuário sem cadastro (404) para /perfil', async () => {
+  it('guard da visão geral manda usuário sem cadastro (404) para /perfil', async () => {
     const http = TestBed.inject(HttpTestingController);
     const resultado = TestBed.runInInjectionContext(() => perfilCompletoGuard({} as never, {} as never));
     const promessa = firstValueFrom(resultado as never);
@@ -96,7 +96,7 @@ describe('autenticação', () => {
     expect(String(await promessa)).toBe('/perfil');
   });
 
-  it('guard do início libera quem já tem cadastro', async () => {
+  it('guard da visão geral libera quem já tem cadastro', async () => {
     const http = TestBed.inject(HttpTestingController);
     const resultado = TestBed.runInInjectionContext(() => perfilCompletoGuard({} as never, {} as never));
     const promessa = firstValueFrom(resultado as never);
@@ -117,3 +117,4 @@ describe('Login', () => {
     TestBed.inject(HttpTestingController).expectNone(`${API}/auth/login`);
   });
 });
+

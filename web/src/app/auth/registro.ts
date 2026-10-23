@@ -25,6 +25,10 @@ export class Registro {
 
   protected readonly form = this.fb.nonNullable.group(
     {
+      nomeUsuario: [
+        '',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(30), Validators.pattern(/^[A-Za-z0-9._-]+$/)]
+      ],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(254)]],
       // 72 é o limite do BCrypt no servidor
       senha: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
@@ -38,10 +42,10 @@ export class Registro {
       this.form.markAllAsTouched();
       return;
     }
-    const { email, senha } = this.form.getRawValue();
+    const { nomeUsuario, email, senha } = this.form.getRawValue();
     this.enviando.set(true);
     this.erro.set(null);
-    this.auth.registrar(email.trim(), senha).subscribe({
+    this.auth.registrar(nomeUsuario, email.trim(), senha).subscribe({
       // conta nova nunca tem dados pessoais: segue direto para o cadastro
       next: (r) => this.router.navigateByUrl(this.auth.destinoPosLogin(r)),
       error: (e: HttpErrorResponse) => {

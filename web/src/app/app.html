@@ -1,13 +1,30 @@
 <header class="topo">
-  <strong>Assistente Diário</strong>
   @if (auth.logado()) {
-    <nav>
-      <a routerLink="/inicio" routerLinkActive="ativo">Início</a>
-      <a routerLink="/perfil" routerLinkActive="ativo">Meus dados</a>
-      <span class="usuario">{{ auth.email() }}</span>
-      <button type="button" class="sair" (click)="auth.sair()">Sair</button>
-    </nav>
+    <div class="menu">
+      <button
+        type="button"
+        class="menu-botao"
+        aria-haspopup="true"
+        aria-controls="menu-painel"
+        aria-label="Menu"
+        [attr.aria-expanded]="menuAberto()"
+        (click)="alternarMenu()"
+      >
+        <span class="hamburguer" aria-hidden="true"></span>
+      </button>
+
+      @if (menuAberto()) {
+        <nav id="menu-painel" class="menu-painel" aria-label="Menu principal">
+          <p class="saudacao">Olá, {{ saudacao() }}</p>
+          <a routerLink="/visao-geral" routerLinkActive="ativo" (click)="fecharMenu()">Visão geral</a>
+          <a routerLink="/perfil" routerLinkActive="ativo" (click)="fecharMenu()">Meus dados</a>
+          <button type="button" class="menu-sair" (click)="sair()">Sair</button>
+        </nav>
+      }
+    </div>
   }
+
+  <strong class="marca">Assistente Diário</strong>
 </header>
 
 <main class="conteudo">

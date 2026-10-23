@@ -2,6 +2,7 @@ package br.com.assistente.backend.config;
 
 import br.com.assistente.backend.auth.CredenciaisInvalidasException;
 import br.com.assistente.backend.auth.EmailJaCadastradoException;
+import br.com.assistente.backend.auth.NomeUsuarioEmUsoException;
 import br.com.assistente.backend.pessoa.PerfilJaExisteException;
 import br.com.assistente.backend.pessoa.PessoaNaoEncontradaException;
 import br.com.assistente.backend.usuario.UsuarioNaoEncontradoException;
@@ -22,7 +23,8 @@ public class ApiExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
-    @ExceptionHandler({ EmailJaCadastradoException.class, PerfilJaExisteException.class })
+    @ExceptionHandler({ EmailJaCadastradoException.class, NomeUsuarioEmUsoException.class,
+            PerfilJaExisteException.class })
     public ProblemDetail conflito(RuntimeException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }

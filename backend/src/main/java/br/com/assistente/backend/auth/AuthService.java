@@ -33,11 +33,15 @@ public class AuthService {
         if (usuarios.existsByEmail(email)) {
             throw new EmailJaCadastradoException();
         }
+        if (usuarios.existsByNomeUsuarioIgnoreCase(req.nomeUsuario())) {
+            throw new NomeUsuarioEmUsoException();
+        }
         Usuario u = new Usuario();
         u.setEmail(email);
+        u.setNomeUsuario(req.nomeUsuario());
         u.setSenhaHash(encoder.encode(req.senha()));
         u = usuarios.saveAndFlush(u);
-        return new AuthResponse(tokens.gerar(u), u.getEmail(), false);
+        return new AuthResponse(tokens.gerar(u), u.getEmail(), u.getNomeUsuario(), false);
     }
 
     @Transactional(readOnly = true)
@@ -50,7 +54,8 @@ public class AuthService {
         if (!encoder.matches(req.senha(), u.getSenhaHash())) {
             throw new CredenciaisInvalidasException();
         }
-        return new AuthResponse(tokens.gerar(u), u.getEmail(), pessoas.existsByUsuarioId(u.getId()));
+        return new AuthResponse(tokens.gerar(u), u.getEmail(), u.getNomeUsuario(),
+                pessoas.existsByUsuarioId(u.getId()));
     }
 
     private static String normalizar(String email) {

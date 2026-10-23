@@ -1,43 +1,127 @@
 .topo {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
+  gap: 12px;
+  padding: 8px 16px;
   background: #1f3a5f;
   color: #fff;
 }
 
-.topo nav {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.marca {
+  font-size: 1.05rem;
 }
 
-.usuario {
-  font-size: 0.85rem;
-  color: #cfd8e6;
+/* Menu dropdown à esquerda do cabeçalho */
+.menu {
+  position: relative;
 }
 
-.sair {
-  border: 1px solid #cfd8e6;
+.menu-botao {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
   border-radius: 6px;
-  padding: 4px 12px;
-  font: inherit;
   background: transparent;
-  color: #fff;
   cursor: pointer;
 }
 
-.topo a {
-  color: #cfd8e6;
-  text-decoration: none;
-  padding: 4px 0;
-  border-bottom: 2px solid transparent;
+.menu-botao:hover,
+.menu-botao[aria-expanded='true'] {
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.topo a.ativo {
-  color: #fff;
-  border-bottom-color: #fff;
+.menu-botao:focus-visible,
+.menu-painel a:focus-visible,
+.menu-sair:focus-visible {
+  outline: 2px solid #8fb4ff;
+  outline-offset: 2px;
+}
+
+/* Três barras desenhadas com uma só caixa */
+.hamburguer,
+.hamburguer::before,
+.hamburguer::after {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+.hamburguer {
+  position: relative;
+}
+
+.hamburguer::before,
+.hamburguer::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.hamburguer::before {
+  top: -7px;
+}
+
+.hamburguer::after {
+  top: 7px;
+}
+
+.menu-painel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 260px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  background: #fff;
+  color: #1c2430;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.saudacao {
+  margin: 0;
+  padding: 8px 16px 12px;
+  border-bottom: 1px solid #e3e8f0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.menu-painel a,
+.menu-sair {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-painel a:hover,
+.menu-sair:hover {
+  background: #eef3fb;
+}
+
+.menu-painel a.ativo {
+  font-weight: 600;
+  background: #eef3fb;
+}
+
+.menu-sair {
+  color: #b3261e;
+  border-top: 1px solid #e3e8f0;
 }
 
 .conteudo {

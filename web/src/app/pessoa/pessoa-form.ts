@@ -90,7 +90,7 @@ export class PessoaForm implements OnInit {
     this.salvando.set(true);
     this.erro.set(null);
     chamada.subscribe({
-      next: () => this.router.navigateByUrl('/inicio'),
+      next: () => this.router.navigateByUrl('/visao-geral'),
       error: (e: HttpErrorResponse) => {
         this.salvando.set(false);
         this.erro.set(mensagemDeErro(e, 'Erro ao salvar.'));

@@ -11,12 +11,12 @@ export const authGuard: CanActivateFn = () => {
   return inject(AuthService).logado() ? true : inject(Router).createUrlTree(['/login']);
 };
 
-/** Telas de login/registro: quem já está logado vai direto para o início. */
+/** Telas de login/registro: quem já está logado vai direto para a visão geral. */
 export const visitanteGuard: CanActivateFn = () => {
-  return inject(AuthService).logado() ? inject(Router).createUrlTree(['/inicio']) : true;
+  return inject(AuthService).logado() ? inject(Router).createUrlTree(['/visao-geral']) : true;
 };
 
-/** O início exige os dados pessoais preenchidos; usuário novo é levado ao cadastro. */
+/** A visão geral exige os dados pessoais preenchidos; usuário novo é levado ao cadastro. */
 export const perfilCompletoGuard: CanActivateFn = () => {
   const router = inject(Router);
   return inject(PessoaService)

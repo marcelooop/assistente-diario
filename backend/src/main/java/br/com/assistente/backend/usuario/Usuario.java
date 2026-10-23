@@ -24,6 +24,10 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 254)
     private String email;
 
+    /** Nome exibido ao usuario ("Ola, marcelo"). Unico, sem diferenciar maiusculas de minusculas. */
+    @Column(nullable = false, unique = true, length = 30)
+    private String nomeUsuario;
+
     /** Hash BCrypt; a senha em texto puro nunca e guardada. */
     @Column(nullable = false, length = 100)
     private String senhaHash;

@@ -31,17 +31,30 @@ class AuthEPerfilApiTest {
         return "u" + UUID.randomUUID() + "@teste.com";
     }
 
-    private static String credenciais(String email, String senha) {
+    private static String novoNome() {
+        return "u" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+    }
+
+    private static String login(String email, String senha) {
         return "{\"email\":\"" + email + "\",\"senha\":\"" + senha + "\"}";
     }
 
-    private String registrar(String email) throws Exception {
+    private static String registro(String nome, String email, String senha) {
+        return "{\"nomeUsuario\":\"" + nome + "\",\"email\":\"" + email + "\",\"senha\":\"" + senha + "\"}";
+    }
+
+    private String registrar(String nome, String email) throws Exception {
         String corpo = mvc.perform(post("/api/auth/registrar").contentType(MediaType.APPLICATION_JSON)
-                        .content(credenciais(email, SENHA)))
+                        .content(registro(nome, email, SENHA)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nomeUsuario").value(nome))
                 .andExpect(jsonPath("$.perfilCompleto").value(false))
                 .andReturn().getResponse().getContentAsString();
         return JsonPath.read(corpo, "$.token");
+    }
+
+    private String registrar() throws Exception {
+        return registrar(novoNome(), novoEmail());
     }
 
     private static String bearer(String token) {
@@ -50,8 +63,9 @@ class AuthEPerfilApiTest {
 
     @Test
     void usuarioNovoNaoTemPerfilECadastraDepois() throws Exception {
+        String nome = novoNome();
         String email = novoEmail();
-        String token = registrar(email);
+        String token = registrar(nome, email);
 
         mvc.perform(get("/api/perfil").header("Authorization", bearer(token)))
                 .andExpect(status().isNotFound());
@@ -62,40 +76,51 @@ class AuthEPerfilApiTest {
                 .andExpect(jsonPath("$.imc").value(22.86))
                 .andExpect(jsonPath("$.massaMagra").value(nullValue()));
 
-        // login seguinte indica usuario ja cadastrado
+        // login seguinte indica usuario ja cadastrado e devolve o nome de usuario
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(credenciais(email, SENHA)))
+                        .content(login(email, SENHA)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.perfilCompleto").value(true))
+                .andExpect(jsonPath("$.nomeUsuario").value(nome))
                 .andExpect(jsonPath("$.token").isString());
     }
 
     @Test
     void emailEhNormalizadoERejeitaDuplicado() throws Exception {
         String email = novoEmail();
-        registrar(email);
+        registrar(novoNome(), email);
         mvc.perform(post("/api/auth/registrar").contentType(MediaType.APPLICATION_JSON)
-                        .content(credenciais(email.toUpperCase(), SENHA)))
+                        .content(registro(novoNome(), email.toUpperCase(), SENHA)))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void nomeDeUsuarioEhUnicoSemDiferenciarMaiusculas() throws Exception {
+        String nome = novoNome();
+        registrar(nome, novoEmail());
+        mvc.perform(post("/api/auth/registrar").contentType(MediaType.APPLICATION_JSON)
+                        .content(registro(nome.toUpperCase(), novoEmail(), SENHA)))
                 .andExpect(status().isConflict());
     }
 
     @Test
     void loginComSenhaErradaOuEmailInexistenteRetorna401() throws Exception {
         String email = novoEmail();
-        registrar(email);
+        registrar(novoNome(), email);
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(credenciais(email, "senha-errada-999")))
+                        .content(login(email, "senha-errada-999")))
                 .andExpect(status().isUnauthorized());
         mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(credenciais(novoEmail(), SENHA)))
+                        .content(login(novoEmail(), SENHA)))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void registroValidaEmailESenha() throws Exception {
+    void registroValidaNomeEmailESenha() throws Exception {
         mvc.perform(post("/api/auth/registrar").contentType(MediaType.APPLICATION_JSON)
-                        .content(credenciais("nao-e-email", "curta")))
+                        .content(registro("a b", "nao-e-email", "curta")))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erros.nomeUsuario").exists())
                 .andExpect(jsonPath("$.erros.email").exists())
                 .andExpect(jsonPath("$.erros.senha").exists());
     }
@@ -109,8 +134,8 @@ class AuthEPerfilApiTest {
 
     @Test
     void cadaUsuarioSoEnxergaOProprioPerfil() throws Exception {
-        String tokenA = registrar(novoEmail());
-        String tokenB = registrar(novoEmail());
+        String tokenA = registrar();
+        String tokenB = registrar();
         mvc.perform(post("/api/perfil").header("Authorization", bearer(tokenA))
                 .contentType(MediaType.APPLICATION_JSON).content(PERFIL)).andExpect(status().isCreated());
 
@@ -122,7 +147,7 @@ class AuthEPerfilApiTest {
 
     @Test
     void atualizaPerfilRecalculandoImcEIgnoraImcDoCliente() throws Exception {
-        String token = registrar(novoEmail());
+        String token = registrar();
         mvc.perform(post("/api/perfil").header("Authorization", bearer(token))
                 .contentType(MediaType.APPLICATION_JSON).content(PERFIL)).andExpect(status().isCreated());
 
@@ -138,7 +163,7 @@ class AuthEPerfilApiTest {
 
     @Test
     void perfilRejeitaDadosInvalidos() throws Exception {
-        String token = registrar(novoEmail());
+        String token = registrar();
         mvc.perform(post("/api/perfil").header("Authorization", bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nome\":\"\",\"altura\":9,\"peso\":70,\"metaPeso\":68}"))
