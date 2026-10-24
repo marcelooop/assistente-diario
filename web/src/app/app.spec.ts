@@ -53,7 +53,7 @@ describe('App', () => {
     expect(el.querySelector('.menu-botao')?.getAttribute('aria-expanded')).toBe('true');
     expect(el.querySelector('.saudacao')?.textContent?.trim()).toBe('Olá, marcelo');
     const itens = Array.from(el.querySelectorAll('.menu-painel a, .menu-sair')).map((i) => i.textContent?.trim());
-    expect(itens).toEqual(['Visão geral', 'Meus dados', 'Sair']);
+    expect(itens).toEqual(['Visão geral', 'Refeições', 'Meus dados', 'Sair']);
   });
 
   it('usa o e-mail na saudação se não houver nome de usuário', () => {

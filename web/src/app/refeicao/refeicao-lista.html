@@ -1,0 +1,69 @@
+<div class="cabecalho">
+  <h1>Refeições</h1>
+  <a class="botao" routerLink="/refeicoes/nova">Cadastrar nova refeição</a>
+</div>
+
+@if (aviso(); as a) {
+  <p [class]="a.tipo === 'ok' ? 'aviso sucesso' : 'aviso erro'" [attr.role]="a.tipo === 'ok' ? 'status' : 'alert'">
+    {{ a.texto }}
+  </p>
+}
+
+@if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
+
+@if (carregando()) {
+  <p>Carregando…</p>
+} @else if (refeicoes().length === 0 && !erro()) {
+  <section class="cartao vazio">
+    <p>Você ainda não cadastrou nenhuma refeição.</p>
+    <a class="botao" routerLink="/refeicoes/nova">Cadastrar a primeira refeição</a>
+  </section>
+}
+
+@for (r of refeicoes(); track r.id) {
+  <article class="cartao refeicao">
+    <header class="topo-refeicao">
+      <div>
+        <h2>{{ r.nome }}</h2>
+        <span class="horario">{{ r.horario }}</span>
+        @if (r.compartilhadaPor) { <span class="etiqueta">Recebida de &#64;{{ r.compartilhadaPor }}</span> }
+      </div>
+      <strong class="total">{{ r.totalCalorias | number: '1.0-2' }} kcal</strong>
+    </header>
+
+    <ul class="alimentos">
+      @for (al of r.alimentos; track al.id) {
+        <li>
+          <span>{{ al.nome }}</span>
+          <span>{{ al.calorias | number: '1.0-2' }} kcal</span>
+        </li>
+      }
+    </ul>
+
+    <div class="acoes">
+      <a class="botao secundario" [routerLink]="['/refeicoes', r.id, 'editar']">Editar</a>
+      <button type="button" class="botao secundario" (click)="abrirCompartilhar(r)">Compartilhar</button>
+      <button type="button" class="botao secundario" [disabled]="baixandoId() === r.id" (click)="baixar(r)">
+        {{ baixandoId() === r.id ? 'Gerando…' : 'Baixar PDF' }}
+      </button>
+      <button type="button" class="botao perigo" (click)="excluir(r)">Excluir</button>
+    </div>
+
+    @if (compartilhandoId() === r.id) {
+      <form class="compartilhar" (ngSubmit)="enviar(r)" novalidate>
+        <label>
+          Enviar uma cópia para (nome de usuário)
+          <input type="text" [formControl]="destinatario" maxlength="31" placeholder="Ex.: maria" autocomplete="off" />
+          @if (destinatario.invalid && destinatario.touched) {
+            <small class="erro">Informe o nome de usuário do destinatário.</small>
+          }
+        </label>
+        <small class="dica">A pessoa recebe uma cópia na lista dela e pode editá-la sem afetar a sua.</small>
+        <div class="acoes">
+          <button type="submit" class="botao" [disabled]="enviando()">{{ enviando() ? 'Enviando…' : 'Enviar' }}</button>
+          <button type="button" class="botao secundario" (click)="fecharCompartilhar()">Cancelar</button>
+        </div>
+      </form>
+    }
+  </article>
+}

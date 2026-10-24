@@ -17,6 +17,7 @@
         <nav id="menu-painel" class="menu-painel" aria-label="Menu principal">
           <p class="saudacao">Olá, {{ saudacao() }}</p>
           <a routerLink="/visao-geral" routerLinkActive="ativo" (click)="fecharMenu()">Visão geral</a>
+          <a routerLink="/refeicoes" routerLinkActive="ativo" (click)="fecharMenu()">Refeições</a>
           <a routerLink="/perfil" routerLinkActive="ativo" (click)="fecharMenu()">Meus dados</a>
           <button type="button" class="menu-sair" (click)="sair()">Sair</button>
         </nav>

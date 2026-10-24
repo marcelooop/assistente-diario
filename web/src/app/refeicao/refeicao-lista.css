@@ -1,0 +1,89 @@
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cabecalho h1 {
+  margin: 0;
+}
+
+.refeicao {
+  margin-bottom: 16px;
+}
+
+.vazio {
+  text-align: center;
+}
+
+.topo-refeicao {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topo-refeicao h2 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+
+.horario {
+  font-weight: 600;
+  color: #1f3a5f;
+}
+
+.etiqueta {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e3e8f0;
+  font-size: 0.8rem;
+}
+
+.total {
+  white-space: nowrap;
+  font-size: 1.2rem;
+}
+
+.alimentos {
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alimentos li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #e3e8f0;
+}
+
+.acoes {
+  flex-wrap: wrap;
+}
+
+.compartilhar {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e3e8f0;
+}
+
+.aviso {
+  padding: 10px 14px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.aviso.sucesso {
+  border-left: 4px solid #1b6e3c;
+}
+
+.aviso.erro {
+  border-left: 4px solid #b3261e;
+}

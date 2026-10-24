@@ -1,0 +1,50 @@
+fieldset {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  border: 1px solid #d5dbe5;
+  border-radius: 6px;
+}
+
+legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.alimento {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #eef3fb;
+  border-radius: 6px;
+}
+
+.total strong {
+  font-size: 1.4rem;
+}
+
+/* Celular: tudo em uma coluna */
+@media (max-width: 560px) {
+  .linha,
+  .alimento {
+    grid-template-columns: 1fr;
+  }
+
+  .remover {
+    justify-self: start;
+  }
+}
